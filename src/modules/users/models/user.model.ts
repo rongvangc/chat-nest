@@ -16,6 +16,9 @@ export class User {
 
   @Prop({ required: true, trim: true })
   hash: string;
+
+  @Prop({ default: Date.now })
+  timestamp: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

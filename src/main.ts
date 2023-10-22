@@ -1,30 +1,22 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import * as cookieParser from 'cookie-parser';
-import * as session from 'express-session';
 import { AppModule } from './app.module';
 import { MongoExceptionFilter } from './exceptions/mongo.exception';
+import { AuthGuard } from './guards/auth.guard';
+import { JwtService } from '@nestjs/jwt';
+import { Reflector } from '@nestjs/core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const jwtService = app.get(JwtService);
+  const reflector = app.get(Reflector);
+
+  app.useGlobalGuards(new AuthGuard(jwtService, reflector));
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new MongoExceptionFilter());
   app.setGlobalPrefix('api');
-  app.use(cookieParser());
-  app.use(
-    session({
-      name: 'JWT',
-      secret: 'my-secret',
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        maxAge: 60 * 60,
-        httpOnly: true,
-        secure: false,
-      },
-    }),
-  );
 
-  await app.listen(process.env.PORT || 4000);
+  await app.listen(process.env.PORT);
 }
 bootstrap();
