@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -7,10 +8,13 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { comparePassword, encodePassword } from 'src/utils/bcrypt';
-import { SigninResponse } from '../interfaces/auth.interface';
-import { AuthCreateDto, AuthLoginDto } from '../dtos/auth.dtos';
 import { User, UserModelDocument } from 'src/modules/users/models/user.model';
+import { comparePassword, encodePassword } from 'src/utils/bcrypt';
+import { AuthCreateDto, AuthLoginDto } from '../dtos/auth.dtos';
+import {
+  CreateUserResponse,
+  SigninResponse,
+} from '../interfaces/auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -23,32 +27,52 @@ export class AuthService {
     username,
     password,
     displayName,
-  }: AuthCreateDto): Promise<string> {
-    const hash = encodePassword(password);
+  }: AuthCreateDto): Promise<CreateUserResponse> {
+    try {
+      const existingUser = await this.userModel.findOne({ username }).exec();
 
-    const createUser = new this.userModel({ username, hash, displayName });
+      if (existingUser) {
+        throw new ConflictException('User exited');
+      }
 
-    createUser.save();
+      const hash = encodePassword(password);
 
-    return `Create user ${username} success`;
+      const createUser = new this.userModel({ username, hash, displayName });
+
+      await createUser.save();
+
+      return {
+        status: true,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async signIn({ username, password }: AuthLoginDto): Promise<SigninResponse> {
-    const user = await this.userModel.findOne({
-      username,
-    });
+    try {
+      const user = await this.userModel.findOne({ username });
 
-    if (!user) throw new HttpException("Can't find user", HttpStatus.NOT_FOUND);
+      if (!user) {
+        throw new HttpException(`Can't find user`, HttpStatus.NOT_FOUND);
+      }
 
-    const isMathPassword = comparePassword(password, user.hash);
+      const isMatchPassword = comparePassword(password, user.hash);
 
-    if (!isMathPassword) throw new UnauthorizedException();
+      if (!isMatchPassword) {
+        throw new UnauthorizedException();
+      }
 
-    return {
-      access_token: this.jwtService.sign({
-        username: user.username,
-        displayName: user.displayName,
-      }),
-    };
+      return {
+        id: user?.id,
+        access_token: this.jwtService.sign({
+          id: user?.id,
+          username: user.username,
+          displayName: user.displayName,
+        }),
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }

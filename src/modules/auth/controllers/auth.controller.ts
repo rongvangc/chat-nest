@@ -1,12 +1,13 @@
-import { Body, Controller, Post, UseFilters } from '@nestjs/common';
-import { MongoExceptionFilter } from 'src/exceptions/mongo.exception';
-import { AuthService } from '../services/auth.service';
+import { Body, Controller, Post } from '@nestjs/common';
 import { Public } from '../decorators/public.decorator';
 import { AuthCreateDto, AuthLoginDto } from '../dtos/auth.dtos';
-import { SigninResponse } from '../interfaces/auth.interface';
+import {
+  CreateUserResponse,
+  SigninResponse,
+} from '../interfaces/auth.interface';
+import { AuthService } from '../services/auth.service';
 
 @Public()
-@UseFilters(MongoExceptionFilter)
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -17,7 +18,7 @@ export class AuthController {
   }
 
   @Post('create')
-  async create(@Body() userData: AuthCreateDto): Promise<string> {
+  async create(@Body() userData: AuthCreateDto): Promise<CreateUserResponse> {
     return this.authService.create(userData);
   }
 }

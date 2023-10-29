@@ -8,6 +8,9 @@ import { AppService } from './app.service';
 import configuration from './configs/configuration';
 import { AuthModule } from './modules/auth/auth.module';
 import { jwtConstants } from './modules/auth/constants/jwtConstants';
+import { MessageModule } from './modules/message/message.module';
+import { RoomModule } from './modules/room/room.module';
+import { UserModule } from './modules/users/user.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { jwtConstants } from './modules/auth/constants/jwtConstants';
       inject: [ConfigService],
     }),
     AuthModule,
+    UserModule,
+    MessageModule,
+    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],
