@@ -32,7 +32,7 @@ export class AuthService {
       const existingUser = await this.userModel.findOne({ username }).exec();
 
       if (existingUser) {
-        throw new ConflictException('Tên người dùng đã tồn tại');
+        throw new ConflictException('User exited');
       }
 
       const hash = encodePassword(password);
@@ -54,10 +54,7 @@ export class AuthService {
       const user = await this.userModel.findOne({ username });
 
       if (!user) {
-        throw new HttpException(
-          'Không tìm thấy người dùng',
-          HttpStatus.NOT_FOUND,
-        );
+        throw new HttpException(`Can't find user`, HttpStatus.NOT_FOUND);
       }
 
       const isMatchPassword = comparePassword(password, user.hash);
@@ -67,7 +64,9 @@ export class AuthService {
       }
 
       return {
+        id: user?.id,
         access_token: this.jwtService.sign({
+          id: user?.id,
           username: user.username,
           displayName: user.displayName,
         }),

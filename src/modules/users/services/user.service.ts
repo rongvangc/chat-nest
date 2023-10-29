@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UserDto } from '../dtos/user.dtos';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserModelDocument } from '../models/user.model';
 import { Model } from 'mongoose';
-import { GetUserResponse } from '../interfaces/user.interface';
+import {
+  GetUserResponse,
+  GetUsersResponse,
+} from '../interfaces/user.interface';
+import { User, UserModelDocument } from '../models/user.model';
 
 @Injectable()
 export class UserService {
@@ -11,10 +13,8 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<UserModelDocument>,
   ) {}
 
-  async getUser({ username }: UserDto): Promise<GetUserResponse> {
-    const user = await this.userModel.findOne({
-      username,
-    });
+  async getUser(id: string): Promise<GetUserResponse> {
+    const user = await this.userModel.findById(id);
 
     return {
       id: user?._id,
@@ -22,5 +22,21 @@ export class UserService {
       displayName: user?.displayName,
       photoURL: user?.photoURL,
     };
+  }
+
+  async getAllUsers(id: string): Promise<GetUsersResponse> {
+    const users = await this.userModel
+      .find({
+        _id: { $ne: id },
+      })
+      .select('-hash -timestamp')
+      .lean();
+
+    const mappedUsers = users.map((user) => {
+      const { _id, ...rest } = user;
+      return { id: _id, ...rest };
+    });
+
+    return mappedUsers;
   }
 }

@@ -56,7 +56,7 @@ export class RoomService {
       return {
         status: true,
         data: {
-          id: room?.id,
+          id: room?._id,
           admin: room?.createdBy,
           createdBy: room?.createdBy,
           name: room?.name,

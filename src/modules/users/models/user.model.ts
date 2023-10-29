@@ -21,4 +21,16 @@ export class User {
   timestamp: Date;
 }
 
+export class PartialUser {
+  @Prop({ required: true, trim: true })
+  username: string;
+
+  @Prop({ required: true, trim: true })
+  displayName: string;
+
+  @Prop()
+  photoURL: string;
+}
+
 export const UserSchema = SchemaFactory.createForClass(User);
+export const PartialUserSchema = SchemaFactory.createForClass(PartialUser);

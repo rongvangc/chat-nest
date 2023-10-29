@@ -4,22 +4,25 @@ import {
   Message,
   MessageSchema,
 } from 'src/modules/message/models/message.model';
-import { User, UserSchema } from 'src/modules/users/models/user.model';
+import {
+  PartialUser,
+  PartialUserSchema,
+} from 'src/modules/users/models/user.model';
 
 export type RoomModelDocument = HydratedDocument<Room>;
 
 @Schema()
 export class Room {
-  @Prop({ required: true, trim: true })
+  @Prop({ trim: true })
   name: string;
 
-  @Prop({ type: [UserSchema] })
-  users: User[];
+  @Prop({ type: [PartialUserSchema] })
+  users: PartialUser[];
 
-  @Prop({ type: UserSchema })
+  @Prop({ trim: true })
   createdBy: string;
 
-  @Prop({ type: UserSchema })
+  @Prop({ trim: true })
   admin: string;
 
   @Prop({ type: [MessageSchema] })

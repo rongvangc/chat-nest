@@ -21,7 +21,7 @@ export class MongoExceptionFilter implements ExceptionFilter {
           statusCode: status,
           timestamp: new Date().toISOString(),
           path: request.url,
-          message: 'Người dùng đã tồn tại',
+          message: 'User exited',
         });
     }
   }

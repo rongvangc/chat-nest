@@ -1,12 +1,12 @@
 import { Types } from 'mongoose';
-import { User } from 'src/modules/users/models/user.model';
+import { PartialUser } from 'src/modules/users/models/user.model';
 
 export type RoomType = {
   id: Types.ObjectId;
   admin: string;
   createdBy: string;
   name: string;
-  users: User[];
+  users: PartialUser[];
 };
 
 export type CreateRoomResponse = {

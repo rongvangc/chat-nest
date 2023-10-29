@@ -6,3 +6,10 @@ export type GetUserResponse = {
   photoURL: string;
   username: string;
 };
+
+export type GetUsersResponse = {
+  id: Types.ObjectId;
+  displayName: string;
+  photoURL: string;
+  username: string;
+}[];
