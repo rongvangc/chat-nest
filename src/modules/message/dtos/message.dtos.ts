@@ -1,6 +1,15 @@
-import { IsString } from 'class-validator';
+import { IsString, IsArray } from 'class-validator';
 
 export class MessageDto {
   @IsString()
-  username: string;
+  roomId: string;
+
+  @IsString()
+  content: string;
+
+  @IsString()
+  senderId: string;
+
+  @IsArray()
+  recipientIds: string[];
 }

@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 
 export type SigninResponse = {
-  id: Types.ObjectId;
+  _id: Types.ObjectId;
   access_token: string;
 };
 

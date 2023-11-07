@@ -12,13 +12,13 @@ export class UserController {
 
   @Get()
   async getUser(@UserToken() user: UserTokenType): Promise<GetUserResponse> {
-    return this.userService.getUser(user?.id);
+    return this.userService.getUser(user?._id);
   }
 
   @Get('all')
   async getAllUsers(
     @UserToken() user: UserTokenType,
   ): Promise<GetUsersResponse> {
-    return this.userService.getAllUsers(user?.id);
+    return this.userService.getAllUsers(user?._id);
   }
 }

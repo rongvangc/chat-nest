@@ -11,7 +11,7 @@ export class User {
   @Prop({ required: true, trim: true })
   displayName: string;
 
-  @Prop()
+  @Prop({ required: true, trim: true })
   photoURL: string;
 
   @Prop({ required: true, trim: true })

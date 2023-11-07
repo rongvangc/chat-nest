@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from 'src/modules/auth/constants/jwtConstants';
 
 export type UserTokenType = {
-  id: string;
+  _id: string;
   username: string;
   displayName: string;
 };

@@ -11,6 +11,7 @@ import { jwtConstants } from './modules/auth/constants/jwtConstants';
 import { MessageModule } from './modules/message/message.module';
 import { RoomModule } from './modules/room/room.module';
 import { UserModule } from './modules/users/user.module';
+import { PusherModule } from './modules/pusher/pusher.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UserModule } from './modules/users/user.module';
     UserModule,
     MessageModule,
     RoomModule,
+    PusherModule,
   ],
   controllers: [AppController],
   providers: [AppService],

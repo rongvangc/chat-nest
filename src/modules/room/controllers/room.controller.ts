@@ -6,14 +6,15 @@ import {
   GetRoomsResponse,
 } from '../interfaces/room.interface';
 import { RoomService } from '../services/room.service';
+import { UserToken, UserTokenType } from 'src/decorators/user.decorator';
 
 @Controller('room')
 export class RoomController {
   constructor(private roomService: RoomService) {}
 
   @Get()
-  async getRooms(): Promise<GetRoomsResponse> {
-    return this.roomService.getRooms();
+  async getRooms(@UserToken() user: UserTokenType): Promise<GetRoomsResponse> {
+    return this.roomService.getRooms(user);
   }
 
   @Get(':id')

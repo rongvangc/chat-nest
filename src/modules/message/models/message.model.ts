@@ -6,10 +6,13 @@ export type MessageModelDocument = HydratedDocument<Message>;
 @Schema()
 export class Message {
   @Prop({ required: true, trim: true })
+  roomId: string;
+
+  @Prop({ required: true, trim: true })
   content: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  sender: string;
+  senderId: string;
 
   @Prop({
     type: [{ type: Types.ObjectId, ref: 'MessageRecipient' }],

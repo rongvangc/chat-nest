@@ -17,9 +17,6 @@ export class Room {
   @Prop({ trim: true })
   admin: string;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Message' }], default: [] })
-  messageIds: string[];
-
   @Prop({ default: Date.now })
   createdAt: Date;
 }

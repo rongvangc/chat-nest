@@ -27,6 +27,7 @@ export class AuthService {
     username,
     password,
     displayName,
+    photoURL,
   }: AuthCreateDto): Promise<CreateUserResponse> {
     try {
       const existingUser = await this.userModel.findOne({ username }).exec();
@@ -37,7 +38,12 @@ export class AuthService {
 
       const hash = encodePassword(password);
 
-      const createUser = new this.userModel({ username, hash, displayName });
+      const createUser = new this.userModel({
+        username,
+        hash,
+        displayName,
+        photoURL,
+      });
 
       await createUser.save();
 
@@ -64,9 +70,9 @@ export class AuthService {
       }
 
       return {
-        id: user?.id,
+        _id: user?.id,
         access_token: this.jwtService.sign({
-          id: user?.id,
+          _id: user?.id,
           username: user.username,
           displayName: user.displayName,
         }),

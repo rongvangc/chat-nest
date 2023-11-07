@@ -7,6 +7,9 @@ export class AuthCreateDto {
   @IsString()
   displayName: string;
 
+  @IsString()
+  photoURL: string;
+
   @IsStrongPassword({ minLength: 8 })
   password: string;
 }

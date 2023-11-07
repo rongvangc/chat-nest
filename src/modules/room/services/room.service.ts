@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Room, RoomModelDocument } from '../models/room.model';
+import { UserTokenType } from 'src/decorators/user.decorator';
+import { PusherService } from 'src/modules/pusher/services/pusher.service';
+import { PusherEvent } from 'src/utils/pusherEvent';
 import { CreateRoomDto } from '../dtos/room.dtos';
 import {
   CreateRoomResponse,
@@ -9,18 +11,20 @@ import {
   GetRoomsResponse,
   RoomType,
 } from '../interfaces/room.interface';
+import { Room, RoomModelDocument } from '../models/room.model';
 
 @Injectable()
 export class RoomService {
   constructor(
     @InjectModel(Room.name) private roomModel: Model<RoomModelDocument>,
+    private readonly pusherService: PusherService,
   ) {}
 
-  async getRooms(): Promise<GetRoomsResponse> {
+  async getRooms(user: UserTokenType): Promise<GetRoomsResponse> {
     try {
-      const rooms = (await this.roomModel
-        .find({})
-        .select('-messageIds')) as RoomType[];
+      const rooms = await this.roomModel
+        .find({ userIds: { $in: [user?._id] } })
+        .populate('userIds', '_id username displayName photoURL');
 
       return {
         status: true,
@@ -33,7 +37,7 @@ export class RoomService {
 
   async getRoomById(id: string): Promise<GetRoomResponse> {
     try {
-      const room = await this.roomModel.findById({ id });
+      const room = await this.roomModel.findById(id);
 
       return {
         status: true,
@@ -59,21 +63,21 @@ export class RoomService {
       });
 
       const room = await createRoom.save();
-      console.log(room);
+
+      const newRoom = await this.roomModel
+        .findById(room?._id)
+        .populate('userIds', '_id username displayName photoURL');
+
+      console.log('runnnnnnnn', userIds);
+
+      // Trigger pusher new room
+      this.pusherService.trigger(userIds, PusherEvent.NEW_ROOM, newRoom);
 
       return {
         status: true,
-        data: {
-          id: room?._id,
-          admin: room?.createdBy,
-          createdBy: room?.createdBy,
-          name: room?.name,
-          userIds: room?.userIds,
-        },
+        data: newRoom,
       };
     } catch (error) {
-      console.log(error);
-
       throw error;
     }
   }

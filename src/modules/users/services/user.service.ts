@@ -17,7 +17,7 @@ export class UserService {
     const user = await this.userModel.findById(id);
 
     return {
-      id: user?._id,
+      _id: user?._id,
       username: user?.username,
       displayName: user?.displayName,
       photoURL: user?.photoURL,
@@ -32,11 +32,6 @@ export class UserService {
       .select('-hash -timestamp')
       .lean();
 
-    const mappedUsers = users.map((user) => {
-      const { _id, ...rest } = user;
-      return { id: _id, ...rest };
-    });
-
-    return mappedUsers;
+    return users;
   }
 }

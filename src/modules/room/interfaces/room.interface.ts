@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 
 export type RoomType = {
-  id: Types.ObjectId;
+  _id: Types.ObjectId;
   admin: string;
   createdBy: string;
   name: string;
