@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserTokenType } from 'src/decorators/user.decorator';
+import {
+  MessageCount,
+  MessageCountModelDocument,
+} from 'src/modules/message/models/messageCount.model';
 import { PusherService } from 'src/modules/pusher/services/pusher.service';
 import { PusherEvent } from 'src/utils/pusherEvent';
 import { CreateRoomDto } from '../dtos/room.dtos';
@@ -17,6 +21,8 @@ import { Room, RoomModelDocument } from '../models/room.model';
 export class RoomService {
   constructor(
     @InjectModel(Room.name) private roomModel: Model<RoomModelDocument>,
+    @InjectModel(MessageCount.name)
+    private messageCountModel: Model<MessageCountModelDocument>,
     private readonly pusherService: PusherService,
   ) {}
 
@@ -24,11 +30,27 @@ export class RoomService {
     try {
       const rooms = await this.roomModel
         .find({ userIds: { $in: [user?._id] } })
-        .populate('userIds', '_id username displayName photoURL');
+        .populate('userIds', '_id username displayName photoURL')
+        .sort({ updatedAt: -1 });
+
+      const messagesCount = await this.messageCountModel.find({
+        userId: user?._id,
+      });
+
+      const mappedData = rooms.map((room) => {
+        const messageCount = messagesCount
+          .find((count) => count.roomId.toString() === room._id.toString())
+          .toObject().messageCount;
+
+        return {
+          ...room.toObject(),
+          count: messageCount,
+        };
+      });
 
       return {
         status: true,
-        data: rooms,
+        data: mappedData,
       };
     } catch (error) {
       throw error;
@@ -68,10 +90,19 @@ export class RoomService {
         .findById(room?._id)
         .populate('userIds', '_id username displayName photoURL');
 
-      console.log('runnnnnnnn', userIds);
+      const messageCounts = userIds.map((userId) => ({
+        roomId: room?._id,
+        userId: userId,
+        messageCount: 0,
+      }));
+
+      await this.messageCountModel.create(messageCounts);
 
       // Trigger pusher new room
-      this.pusherService.trigger(userIds, PusherEvent.NEW_ROOM, newRoom);
+      this.pusherService.trigger(userIds, PusherEvent.NEW_ROOM, {
+        ...newRoom.toObject(),
+        count: 0,
+      });
 
       return {
         status: true,

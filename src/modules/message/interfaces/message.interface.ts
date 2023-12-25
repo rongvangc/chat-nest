@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { Message } from '../models/message.model';
 
 export type MessageType = {
   _id: Types.ObjectId;
@@ -8,12 +9,24 @@ export type MessageType = {
   recipientIds: string[];
 };
 
+export type RecipientData = {
+  userId: string;
+  isRead: boolean;
+};
+
 export type GetRoomMessageResponse = {
   status: boolean;
-  data: MessageType[];
+  data: Message[];
+};
+
+export type ReadRoomMessageResponse = {
+  status: boolean;
+  data: {
+    message: string;
+  };
 };
 
 export type SaveRoomMessageResponse = {
   status: boolean;
-  data: MessageType;
+  data: Message;
 };

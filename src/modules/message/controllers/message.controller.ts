@@ -1,8 +1,9 @@
 import { Param, Body, Controller, Get, Post } from '@nestjs/common';
 import { MessageService } from '../services/message.service';
-import { MessageDto } from '../dtos/message.dtos';
+import { MessageDto, ReadMessageDto } from '../dtos/message.dtos';
 import {
   GetRoomMessageResponse,
+  ReadRoomMessageResponse,
   SaveRoomMessageResponse,
 } from '../interfaces/message.interface';
 import { Types } from 'mongoose';
@@ -23,5 +24,12 @@ export class MessageController {
     @Body() messageData: MessageDto,
   ): Promise<SaveRoomMessageResponse> {
     return this.messageService.saveRoomMessage(messageData);
+  }
+
+  @Post('read')
+  async readRoomMessages(
+    @Body() readMessageData: ReadMessageDto,
+  ): Promise<ReadRoomMessageResponse> {
+    return this.messageService.readRoomMessages(readMessageData);
   }
 }

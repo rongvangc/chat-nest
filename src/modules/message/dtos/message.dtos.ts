@@ -13,3 +13,11 @@ export class MessageDto {
   @IsArray()
   recipientIds: string[];
 }
+
+export class ReadMessageDto {
+  @IsString()
+  roomId: string;
+
+  @IsString()
+  userId: string;
+}

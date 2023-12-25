@@ -6,6 +6,7 @@ export type RoomType = {
   createdBy: string;
   name: string;
   userIds: string[];
+  count?: number;
 };
 
 export type CreateRoomResponse = {

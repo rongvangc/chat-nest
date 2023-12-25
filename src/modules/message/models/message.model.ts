@@ -15,10 +15,16 @@ export class Message {
   senderId: string;
 
   @Prop({
-    type: [{ type: Types.ObjectId, ref: 'MessageRecipient' }],
+    type: [{ type: Types.ObjectId, ref: 'User' }],
     default: [],
   })
-  recipientIds: string[];
+  recipientIds: Types.ObjectId[];
+
+  @Prop({
+    type: [{ type: Types.ObjectId, ref: 'User' }],
+    default: [],
+  })
+  readIds: Types.ObjectId[];
 
   @Prop({ default: Date.now })
   createdAt: Date;
